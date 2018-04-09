@@ -34,16 +34,18 @@ class RecordSoundsViewController: UIViewController {
         if let dirPath = NSSearchPathForDirectoriesInDomains(.documentDirectory,.userDomainMask, true).first {
             let recordingName = "recordedVoice.wav"
             let pathArray = [dirPath, recordingName]
-            let filePath = URL(string: pathArray.joined(separator: "/"))
+
+            if let filePath = URL(string: pathArray.joined(separator: "/")) {
+                let session = AVAudioSession.sharedInstance()
+                try? session.setCategory(AVAudioSessionCategoryPlayAndRecord, with:AVAudioSessionCategoryOptions.defaultToSpeaker)
+                
+                try? audioRecorder = AVAudioRecorder(url: filePath, settings: [:])
+                audioRecorder.delegate = self
+                audioRecorder.isMeteringEnabled = true
+                audioRecorder.prepareToRecord()
+                audioRecorder.record()
+            }
             
-            let session = AVAudioSession.sharedInstance()
-            try! session.setCategory(AVAudioSessionCategoryPlayAndRecord, with:AVAudioSessionCategoryOptions.defaultToSpeaker)
-            
-            try! audioRecorder = AVAudioRecorder(url: filePath!, settings: [:])
-            audioRecorder.delegate = self
-            audioRecorder.isMeteringEnabled = true
-            audioRecorder.prepareToRecord()
-            audioRecorder.record()
         }
     }
     
